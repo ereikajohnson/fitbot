@@ -1,11 +1,13 @@
-import 'package:fitbot/female.dart';
-import 'package:fitbot/male.dart';
-import 'package:fitbot/others.dart';
-import 'package:fitbot/type.dart';
+import 'package:fitbot/bmi.dart';
+import 'package:fitbot/immunity.dart';
+import 'package:fitbot/maintainweight.dart';
+import 'package:fitbot/weightgain.dart';
+import 'package:fitbot/weightloss.dart';
 import 'package:flutter/material.dart';
+import 'gender.dart';
 
-class Genders extends StatelessWidget {
-  const Genders({super.key});
+class Types extends StatelessWidget {
+  const Types({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,46 +28,76 @@ class Genders extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "What's your Gender?",
+              "What's your goal?",
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, 
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 40),
-            GenderButton(
-              gender: 'Female',
-              icon: Icons.female,
-              color: Colors.pink,
+            GoalButton(
+              goal: 'Weight Loss',
+              icon: Icons.trending_down,
+              color: Colors.red,
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(
+                    builder: (context) => const WeightLossPage(),
+                  ),
                 );
               },
             ),
             const SizedBox(height: 20),
-            GenderButton(
-              gender: 'Male',
-              icon: Icons.male,
+            GoalButton(
+              goal: 'Weight Gain',
+              icon: Icons.trending_up,
+              color: Colors.green,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WeightGainPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            GoalButton(
+              goal: 'Maintain Weight',
+              icon: Icons.trending_flat,
               color: Colors.blue,
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(
+                    builder: (context) => const MaintainWeightPage(),
+                  ),
                 );
               },
             ),
             const SizedBox(height: 20),
-            GenderButton(
-              gender: 'Others',
-              icon: Icons.transgender,
+            GoalButton(
+              goal: 'Improve Immunity',
+              icon: Icons.health_and_safety,
               color: Colors.purple,
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(builder: (context) => const ImmunityPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            GoalButton(
+              goal: 'BMI Calculator',
+              icon: Icons.calculate,
+              color: Colors.orange,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Calculator()),
                 );
               },
             ),
@@ -76,15 +108,15 @@ class Genders extends StatelessWidget {
   }
 }
 
-class GenderButton extends StatelessWidget {
-  final String gender;
+class GoalButton extends StatelessWidget {
+  final String goal;
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
 
-  const GenderButton({
+  const GoalButton({
     super.key,
-    required this.gender,
+    required this.goal,
     required this.icon,
     required this.color,
     required this.onPressed,
@@ -93,7 +125,7 @@ class GenderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
+      width: 250,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -109,11 +141,8 @@ class GenderButton extends StatelessWidget {
             Icon(icon, size: 30, color: Colors.white),
             const SizedBox(width: 10),
             Text(
-              gender,
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
+              goal,
+              style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ],
         ),

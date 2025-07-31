@@ -135,10 +135,7 @@ class _LoginState extends State<Login> {
                             password: passcontroller.text,
                             context: context,
                           );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Age()),
-                          );
+                     login(email: emailcontroller.text.trim(), password: passcontroller.text.trim(), context: context);
                         }
                       },
                       child: const Text("Login"),

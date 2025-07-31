@@ -1,4 +1,5 @@
 import 'package:fitbot/gender.dart';
+import 'package:fitbot/type.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -81,7 +82,7 @@ class _AgeState extends State<Age> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Gender(),
+                            builder: (context) => const Genders(),
                           ),
                         );
                       }

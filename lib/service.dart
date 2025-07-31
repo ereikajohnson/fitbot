@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitbot/age.dart';
 import 'package:flutter/material.dart';
 
 Future<void> signup({
@@ -36,6 +37,7 @@ Future<void> login({
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text("login succesfull")));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Age(),));
   } catch (e) {
     ScaffoldMessenger.of(
       context,

@@ -24,7 +24,7 @@ class Register extends StatelessWidget {
           children: [
             const SizedBox(height: 50),
             const Text(
-              "welcome",
+              "FITBOT",
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,

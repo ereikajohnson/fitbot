@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "798061984645",
+    "project_id": "fitbot-2fa67",
+    "storage_bucket": "fitbot-2fa67.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798061984645:android:b9cd2ba96016f1117122ec",
+        "android_client_info": {
+          "package_name": "com.example.fitbot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaiCYI7L73ZdrCKNFQKaLngGzGYmqKWUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

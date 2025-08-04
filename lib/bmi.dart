@@ -11,12 +11,26 @@ class _CalculatorState extends State<Calculator> {
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   String result = '';
+  String category = '';
+  
   void calc() {
     double height = double.parse(heightController.text) / 100;
     double weight = double.parse(weightController.text);
     double bmi = weight / (height * height);
+    
     setState(() {
       result = 'Your BMI is: ${bmi.toStringAsFixed(2)}';
+      
+      
+      if (bmi < 18.5) {
+        category = 'Underweight (below 18.5)';
+      } else if (bmi >= 18.5 && bmi <= 24.9) {
+        category = 'Normal weight (18.5 to 24.9)';
+      } else if (bmi >= 25.0 && bmi <= 29.9) {
+        category = 'Overweight (25.0 to 29.9)';
+      } else {
+        category = 'Obese (30.0 and above)';
+      }
     });
   }
 
@@ -28,8 +42,10 @@ class _CalculatorState extends State<Calculator> {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 230, 99, 99),
-              Color.fromARGB(255, 54, 123, 179),],
+            colors: [
+              Color.fromARGB(255, 230, 99, 99),
+              Color.fromARGB(255, 54, 123, 179),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -47,7 +63,7 @@ class _CalculatorState extends State<Calculator> {
             ),
             SizedBox(height: 20),
             SizedBox(
-              height: 350,
+              height: 400, 
               width: 350,
               child: Card(
                 child: Padding(
@@ -84,34 +100,41 @@ class _CalculatorState extends State<Calculator> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color.fromARGB(255, 230, 99, 99),
-              Color.fromARGB(255, 54, 123, 179),],
+                            colors: [
+                              Color.fromARGB(255, 230, 99, 99),
+                              Color.fromARGB(255, 54, 123, 179),
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Center(
-                          child: TextButton(
-                            onPressed: () {
-                              calc();
-                            },
-                            child: Text(
-                              'Calculate',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        child: TextButton(
+                          onPressed: calc,
+                          child: Text(
+                            'Calculate',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
                       Text(
                         result,
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                           color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        category,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: _getCategoryColor(),
                         ),
                       ),
                     ],
@@ -123,5 +146,17 @@ class _CalculatorState extends State<Calculator> {
         ),
       ),
     );
+  }
+
+  Color _getCategoryColor() {
+    if (category.contains('Underweight')) {
+      return Colors.blue;
+    } else if (category.contains('Normal')) {
+      return Colors.green;
+    } else if (category.contains('Overweight')) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 }

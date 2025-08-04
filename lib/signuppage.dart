@@ -16,6 +16,8 @@ class _SignuppageState extends State<Signuppage> {
   TextEditingController passwordcontroller = TextEditingController();
   TextEditingController confirmpasswordcontroller = TextEditingController();
   final formkey = GlobalKey<FormState>();
+  bool _obscurePassword = true; 
+  bool _obscureConfirmPassword = true; 
 
   @override
   Widget build(BuildContext context) {
@@ -113,12 +115,24 @@ class _SignuppageState extends State<Signuppage> {
                       }
                       return null;
                     },
+                    obscureText: _obscurePassword,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -138,12 +152,24 @@ class _SignuppageState extends State<Signuppage> {
                       }
                       return null;
                     },
+                    obscureText: _obscureConfirmPassword,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                       fillColor: Colors.white,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                       ),
                     ),
                   ),

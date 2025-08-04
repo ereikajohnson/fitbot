@@ -1,4 +1,5 @@
-import 'package:fitbot/type.dart';
+
+import 'package:fitbot/types.dart';
 import 'package:flutter/material.dart';
 
 class Malepage extends StatelessWidget {
@@ -14,7 +15,7 @@ class Malepage extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Types()),
+            MaterialPageRoute(builder: (context) => const TodoPage()),
           );
         },
         child: Container(

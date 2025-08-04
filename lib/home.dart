@@ -1,252 +1,214 @@
-import 'package:fitbot/bmi.dart';
-import 'package:fitbot/chatbot.dart';
-import 'package:fitbot/settings.dart';
-import 'package:fitbot/type.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:fitbot/login.dart';
+import 'package:fitbot/recipe.dart';
+import 'package:fitbot/homecontent.dart';
+import 'package:fitbot/bmi.dart';
+import 'package:fitbot/settings.dart';
+import 'package:fitbot/types.dart';
+import 'package:fitbot/chatbot.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
-class CalculatorPage extends StatelessWidget {
+class MainLayout extends StatefulWidget {
+  const MainLayout({super.key});
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('BMI Calculator')),
-      body: Center(child: Text('Calculator Page Content')),
-    );
-  }
+  State<MainLayout> createState() => _MainLayoutState();
 }
 
-class GoalsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Goals')),
-      body: Center(child: Text('Goals Page Content')),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
-      body: Center(child: Text('Settings Page Content')),
-    );
-  }
-}
-
-class homee extends StatefulWidget {
-  const homee({super.key});
-
-  @override
-  State<homee> createState() => _homeeState();
-}
-
-class _homeeState extends State<homee> {
+class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
-  final String _motivationalQuote =
-      "Every workout counts! Keep pushing forward!";
 
-  void _navigateToPage(BuildContext context, Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  final List<Widget> _pages = [
+    HomeContent(),
+    const Calculator(),
+    const TodoPage(),
+    const Settingss(),
+  ];
+
+  Future<void> pickUploadAndSaveProfileImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+
+    File imageFile = File(pickedFile.path);
+
+    const cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dd2a2od00/image/upload';
+    const uploadPreset = 'profile image';
+
+    final request = http.MultipartRequest('POST', Uri.parse(cloudinaryUrl))
+      ..fields['upload_preset'] = uploadPreset
+      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final respStr = await response.stream.bytesToString();
+      final data = jsonDecode(respStr);
+      final imageUrl = data['secure_url'];
+
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'profileImage': imageUrl,
+      });
+
+      setState(() {}); 
+    } else {
+      print('Upload failed: ${response.statusCode}');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('FITBOT'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: const Color.fromARGB(255, 7, 6, 6)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
+      extendBody: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color.fromARGB(255, 230, 99, 99), Color.fromARGB(255, 54, 123, 179)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          title: const Text(
+            'FITBOT',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.white),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No new notifications')),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .get(),
+              builder: (context, snapshot) {
+                String? imageUrl;
+                String username = "User";
+                String email = "email@example.com";
+
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+                  username = data['username'] ?? username;
+                  email = data['email'] ?? email;
+                  imageUrl = data['profileImage'];
+                }
+
+                return UserAccountsDrawerHeader(
+                  accountName: Text(username),
+                  accountEmail: Text(email),
+                  currentAccountPicture: GestureDetector(
+                    onTap: pickUploadAndSaveProfileImage,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
+                      child: imageUrl == null
+                          ? const Icon(Icons.person, color: Colors.grey)
+                          : null,
+                    ),
+                  ),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color.fromARGB(255, 230, 99, 99), Color.fromARGB(255, 54, 123, 179)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.home, color: Colors.blue),
+              title: const Text("Home"),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentIndex = 0);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.blue),
+              title: const Text("Settings"),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _currentIndex = 3);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text("Logout"),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const Login()));
+              },
+            ),
+          ],
+        ),
+      ),
+
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: "chatbot",
             onPressed: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('No new notifications')));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ChatbotScreen()));
             },
+            backgroundColor: Colors.redAccent,
+            child: const Icon(Icons.psychology_alt, color: Colors.white),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: "AI Recipe",
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeScreen()));
+            },
+            backgroundColor: Colors.blueAccent,
+            child: const Icon(Icons.task_alt, color: Colors.white),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatbotScreen()),
-          );
-        },
-        child: Icon(Icons.psychology_alt),
-      ),
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 230, 99, 99),
-              Color.fromARGB(255, 54, 123, 179),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Welcome!",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 70, 73, 74),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Ready to crush your fitness goals today?",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 70, 73, 74),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lightbulb, color: Colors.amber),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _motivationalQuote,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 230, 99, 99),
-                    Color.fromARGB(255, 54, 123, 179),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Text(
-                "FITBOT",
-                style: TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home, color: Colors.blue),
-              title: Text("Home"),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToPage(context, homee());
-              },
-            ),
-            Divider(height: 1, thickness: 1),
-            ListTile(
-              leading: Icon(Icons.settings, color: Colors.blue),
-              title: Text("Settings"),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToPage(context, SettingsPage());
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.help_outline, color: Colors.blue),
-              title: Text("Help & Feedback"),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.info_outline, color: Colors.blue),
-              title: Text("About Us"),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.star, color: Colors.amber),
-              title: Text("Premium"),
-              trailing: Icon(Icons.workspace_premium, color: Colors.amber),
-              onTap: () {},
-            ),
-            Divider(height: 1, thickness: 1),
-            ListTile(
-              leading: Icon(Icons.logout, color: Colors.red),
-              title: Text("Logout"),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          switch (index) {
-            case 0:
-              _navigateToPage(context, homee());
-              break;
-            case 1:
-              _navigateToPage(context, Calculator());
-              break;
-            case 2:
-              _navigateToPage(context, Types());
-              break;
-            case 3:
-              _navigateToPage(context, settingss());
-              break;
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Color.fromARGB(255, 54, 123, 179),
-        unselectedItemColor: Colors.grey,
+      body: _pages[_currentIndex],
+
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        height: 60,
+        color: const Color.fromARGB(255, 230, 99, 99),
+        buttonBackgroundColor: const Color.fromARGB(255, 245, 192, 192),
+        backgroundColor: Colors.transparent,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 500),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calculate),
-            label: 'BMI Calculator',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.flag), label: 'Goals'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
+          Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(Icons.calculate, size: 30, color: Colors.white),
+          Icon(Icons.flag, size: 30, color: Colors.white),
+          Icon(Icons.settings, size: 30, color: Colors.white),
         ],
       ),
     );

@@ -1,4 +1,5 @@
-import 'package:fitbot/type.dart';
+
+import 'package:fitbot/types.dart';
 import 'package:flutter/material.dart';
 
 
@@ -16,7 +17,7 @@ class Femalepage extends StatelessWidget {
         
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Types()),
+            MaterialPageRoute(builder: (context) => const TodoPage()),
           );
         },
         child: Container(

@@ -1,7 +1,8 @@
 import 'package:fitbot/female.dart';
 import 'package:fitbot/male.dart';
 import 'package:fitbot/others.dart';
-import 'package:fitbot/type.dart';
+import 'package:fitbot/types.dart';
+
 import 'package:flutter/material.dart';
 
 class Genders extends StatelessWidget {
@@ -41,7 +42,7 @@ class Genders extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(builder: (context) => const TodoPage()),
                 );
               },
             ),
@@ -53,7 +54,7 @@ class Genders extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(builder: (context) => const TodoPage()),
                 );
               },
             ),
@@ -65,7 +66,7 @@ class Genders extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Types()),
+                  MaterialPageRoute(builder: (context) => const TodoPage()),
                 );
               },
             ),

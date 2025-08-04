@@ -1,17 +1,16 @@
+import 'package:fitbot/changepassword.dart';
+import 'package:fitbot/themechange.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class settingss extends StatelessWidget {
-  const settingss({super.key});
+class Settingss extends StatelessWidget {
+  const Settingss({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
@@ -29,7 +28,6 @@ class settingss extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               _buildSettingsSection(
                 title: "Account",
                 children: [
@@ -41,12 +39,17 @@ class settingss extends StatelessWidget {
                   _buildSettingsTile(
                     icon: Icons.lock,
                     title: "Privacy & Security",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacySecurityPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-              
-              
               _buildSettingsSection(
                 title: "Preferences",
                 children: [
@@ -58,12 +61,15 @@ class settingss extends StatelessWidget {
                   _buildSettingsTile(
                     icon: Icons.dark_mode,
                     title: "Dark Mode",
-                    trailing: Switch(value: false, onChanged: (val) {}),
+                    trailing: Switch(
+                      value: themeProvider.isDarkMode,
+                      onChanged: (val) {
+                        themeProvider.toggleTheme();
+                      },
+                    ),
                   ),
                 ],
               ),
-              
-              
               _buildSettingsSection(
                 title: "Support",
                 children: [
@@ -79,20 +85,19 @@ class settingss extends StatelessWidget {
                   ),
                 ],
               ),
-              
-              
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Center(
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Logout",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -128,11 +133,9 @@ class settingss extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
       ],
     );
   }

@@ -26,43 +26,109 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("AI Recipe Recommender")),
-      body: Padding(
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(70),
+      child: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 230, 99, 99),
+                Color.fromARGB(255, 54, 123, 179),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          "AI Recipe Recommender",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        elevation: 0,
+      ),
+    ),
+    body: Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 230, 99, 99),
+            Color.fromARGB(255, 54, 123, 179),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Enter ingredients (comma separated)",
+            const SizedBox(height: 20),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.fastfood),
+                        labelText: "Enter ingredients (comma separated)",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          _fetchRecipes();
+                        }
+                      },
+                      icon: const Icon(Icons.search),
+                      label: const Text("Get Recipes"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                if (_controller.text.isNotEmpty) {
-                  _fetchRecipes();
-                }
-              },
-              child: const Text("Get Recipes"),
-            ),
             const SizedBox(height: 20),
-            if (_loading) const CircularProgressIndicator(),
+            if (_loading)
+              const CircularProgressIndicator(color: Colors.white),
             if (_result != null)
               Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    _result!,
-                    style: const TextStyle(fontSize: 16),
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        _result!,
+                        style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ),
                   ),
                 ),
               ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

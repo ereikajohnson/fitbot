@@ -1,5 +1,5 @@
 import 'package:fitbot/gender.dart';
-import 'package:fitbot/type.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
